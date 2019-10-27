@@ -1,4 +1,6 @@
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 
@@ -15,20 +17,20 @@ int main() {
   const auto required_ext =
       glfwGetRequiredInstanceExtensions(&required_ext_count);
 
-  std::vector<const char *> ext;
+  std::vector<const char *> extensions;
   for (uint32_t i = 0u; i != required_ext_count; ++i)
-    ext.emplace_back(required_ext[i]);
+    extensions.emplace_back(required_ext[i]);
 
   // Layer : Vulkan の API 呼び出しをフックする仕組み
   std::vector<const char *> layers;
   layers.emplace_back("VK_LAYER_LUNARG_standard_validation");
 
-  auto instance =
-      vk::createInstanceUnique(vk::InstanceCreateInfo()
-                                   .setPApplicationInfo(&app_info)
-                                   .setEnabledExtensionCount(ext.size())
-                                   .setPpEnabledExtensionNames(ext.data())
-                                   .setPpEnabledLayerNames(layers.data()));
+  auto instance = vk::createInstanceUnique(
+      vk::InstanceCreateInfo()
+          .setPApplicationInfo(&app_info)
+          .setEnabledExtensionCount(extensions.size())
+          .setPpEnabledExtensionNames(extensions.data())
+          .setPpEnabledLayerNames(layers.data()));
 
   auto devices = instance->enumeratePhysicalDevices();
 
@@ -75,6 +77,40 @@ int main() {
               << "    Vendor ID: " << props.vendorID << std::endl
               << "    Device ID: " << props.deviceID << std::endl;
   }
+
+  // GLFW の提供するサーフェスに出力できない物理デバイスを除外する
+  devices.erase(
+      std::remove_if(
+          devices.begin(), devices.end(),
+          [&](const auto &device) -> bool {
+            auto avail_dexts = device.enumerateDeviceExtensionProperties();
+            for (const char *ext : extensions)
+              if (std::find_if(avail_dexts.begin(), avail_dexts.end(),
+                               [&](const auto &dext) {
+                                 return !strcmp(dext.extensionName, ext);
+                               }) == avail_dexts.end())
+                return true;
+
+            const auto avail_dlayers = device.enumerateDeviceLayerProperties();
+            for (const char *layer : layers)
+              if (std::find_if(avail_dlayers.begin(), avail_dlayers.end(),
+                               [&](const auto &dlayer) {
+                                 return !strcmp(dlayer.layerName, layer);
+                               }) == avail_dlayers.end())
+                return true;
+
+            const auto queue_props = device.getQueueFamilyProperties();
+            bool has_compatible_queue = false;
+            for (uint32_t i = 0; i < queue_props.size(); ++i)
+              if (glfwGetPhysicalDevicePresentationSupport(*instance, device,
+                                                           i)) {
+                has_compatible_queue = true;
+                break;
+              }
+
+            return !has_compatible_queue;
+          }),
+      devices.end());
 
   return 0;
 }
