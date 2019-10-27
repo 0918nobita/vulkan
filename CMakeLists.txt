@@ -6,3 +6,5 @@ add_executable(Main main.cpp)
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 target_link_libraries(Main ${Vulkan_LIBRARIES})
+
+add_executable(ParamPack param_pack.cpp)
