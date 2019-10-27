@@ -7,6 +7,7 @@ int main() {
 
   const std::vector<const char *> ext;
 
+  // Layer : Vulkan の API 呼び出しをフックする仕組み
   std::vector<const char *> layers;
   layers.emplace_back("VK_LAYER_LUNARG_standard_validation");
 
@@ -27,10 +28,14 @@ int main() {
   std::cout << devices.size() << " device(s) found" << std::endl;
 
   for (const auto &device : devices) {
+    // vk::PhysicalDeviceProperties : 物理デバイスの基本的な情報
     const auto props = device.getProperties();
+
+    // vk::PhysicalDeviceProperties::deviceName : デバイス名の文字列
     std::cout << "[" << props.deviceName << "]" << std::endl
               << "  DeviceType: ";
 
+    // vk::PhysicalDeviceProperties::deviceType : デバイスの種類
     switch (props.deviceType) {
     case vk::PhysicalDeviceType::eIntegratedGpu:
       std::cout << "Integrated GPU";
@@ -46,10 +51,16 @@ int main() {
       break;
     }
 
+    // vk::PhysicalDeviceProperties::
+    //   apiVersion : デバイスのサポートする Vulkan のバージョン
+    //   vendorID : デバイスのベンダーを識別する ID
+    //   deviceID : 同一ベンダーの異なるデバイスを識別する ID
     std::cout << std::endl
               << "  API Version: " << VK_VERSION_MAJOR(props.apiVersion) << "."
               << VK_VERSION_MINOR(props.apiVersion) << "."
-              << VK_VERSION_PATCH(props.apiVersion) << std::endl;
+              << VK_VERSION_PATCH(props.apiVersion) << std::endl
+              << "  Vendor ID: " << props.vendorID << std::endl
+              << "  Device ID: " << props.deviceID << std::endl;
   }
 
   return 0;
