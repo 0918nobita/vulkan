@@ -1,11 +1,23 @@
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <vulkan/vulkan.hpp>
 
 int main() {
+  glfwInit();
+
+  /*std::shared_ptr<void> glfw_deleter(nullptr,
+                                     [](const void *) { glfwTerminate(); });*/
+
   const auto app_info =
       vk::ApplicationInfo("Example", VK_MAKE_VERSION(0, 1, 0));
 
-  const std::vector<const char *> ext;
+  uint32_t required_ext_count = 0u;
+  const auto required_ext =
+      glfwGetRequiredInstanceExtensions(&required_ext_count);
+
+  std::vector<const char *> ext;
+  for (uint32_t i = 0u; i != required_ext_count; ++i)
+    ext.emplace_back(required_ext[i]);
 
   // Layer : Vulkan の API 呼び出しをフックする仕組み
   std::vector<const char *> layers;
@@ -25,6 +37,7 @@ int main() {
     exit(1);
   }
 
+  std::cout << "[Available physical devices]" << std::endl;
   std::cout << devices.size() << " device(s) found" << std::endl;
 
   for (const auto &device : devices) {
@@ -32,8 +45,8 @@ int main() {
     const auto props = device.getProperties();
 
     // vk::PhysicalDeviceProperties::deviceName : デバイス名の文字列
-    std::cout << "[" << props.deviceName << "]" << std::endl
-              << "  DeviceType: ";
+    std::cout << "  [" << props.deviceName << "]" << std::endl
+              << "    DeviceType: ";
 
     // vk::PhysicalDeviceProperties::deviceType : デバイスの種類
     switch (props.deviceType) {
@@ -56,11 +69,11 @@ int main() {
     //   vendorID : デバイスのベンダーを識別する ID
     //   deviceID : 同一ベンダーの異なるデバイスを識別する ID
     std::cout << std::endl
-              << "  API Version: " << VK_VERSION_MAJOR(props.apiVersion) << "."
-              << VK_VERSION_MINOR(props.apiVersion) << "."
+              << "    API Version: " << VK_VERSION_MAJOR(props.apiVersion)
+              << "." << VK_VERSION_MINOR(props.apiVersion) << "."
               << VK_VERSION_PATCH(props.apiVersion) << std::endl
-              << "  Vendor ID: " << props.vendorID << std::endl
-              << "  Device ID: " << props.deviceID << std::endl;
+              << "    Vendor ID: " << props.vendorID << std::endl
+              << "    Device ID: " << props.deviceID << std::endl;
   }
 
   return 0;
