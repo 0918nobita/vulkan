@@ -2,7 +2,8 @@
 
 ## Requirements
 
-- Vulkan SDK
+- Vulkan SDK 1.1.121
+- GLFW 3.3
 - CMake
 
 ## Building
