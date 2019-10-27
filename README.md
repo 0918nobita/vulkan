@@ -1,5 +1,10 @@
 # Vulkan Examples
 
+## Requirements
+
+- Vulkan SDK
+- CMake
+
 ## Building
 
 ```bash
