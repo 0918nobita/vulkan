@@ -112,5 +112,24 @@ int main() {
           }),
       devices.end());
 
+  // GLFW に、今から作るウィンドウで OpenGL を使う意思がないことを伝える
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+  // glfwCreateWindow : ウィンドウの生成
+  GLFWwindow *window = glfwCreateWindow(500, 500, "", nullptr, nullptr);
+  if (!window) {
+    std::cerr << "Cannot create window" << std::endl;
+    glfwTerminate();
+    return 1;
+  }
+
+  VkSurfaceKHR surface;
+  // glfwCreateWindowSurface : GLFW が提供する VkSurfaceKHR を取得する
+  if (glfwCreateWindowSurface(instance.get(), window, nullptr, &surface) !=
+      VK_SUCCESS) {
+    std::cerr << "Cannot create surface" << std::endl;
+    return 1;
+  }
+
   return 0;
 }
