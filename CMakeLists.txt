@@ -9,3 +9,5 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 target_link_libraries(Main ${Vulkan_LIBRARIES} glfw)
 
 add_executable(ParamPack param_pack.cpp)
+
+add_executable(Vector vector_manipulations.cpp)
