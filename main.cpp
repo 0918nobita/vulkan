@@ -52,6 +52,9 @@ int main() {
     case vk::PhysicalDeviceType::eIntegratedGpu:
       std::cout << "Integrated GPU";
       break;
+    case vk::PhysicalDeviceType::eDiscreteGpu:
+      std::cout << "Discrete GPU";
+      break;
     case vk::PhysicalDeviceType::eVirtualGpu:
       std::cout << "Virtual GPU";
       break;
