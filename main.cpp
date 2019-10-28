@@ -7,9 +7,6 @@
 int main() {
   glfwInit();
 
-  /*std::shared_ptr<void> glfw_deleter(nullptr,
-                                     [](const void *) { glfwTerminate(); });*/
-
   const auto app_info =
       vk::ApplicationInfo("Example", VK_MAKE_VERSION(0, 1, 0));
 
@@ -17,7 +14,7 @@ int main() {
   const auto required_ext =
       glfwGetRequiredInstanceExtensions(&required_ext_count);
 
-  std::vector<const char *> extensions;
+  std::vector<const char *> extensions = {};
   for (uint32_t i = 0u; i != required_ext_count; ++i)
     extensions.emplace_back(required_ext[i]);
 
