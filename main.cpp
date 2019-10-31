@@ -108,7 +108,7 @@ int main() {
   // glfwCreateWindow : ウィンドウの生成
   GLFWwindow *window = glfwCreateWindow(500, 500, "", nullptr, nullptr);
   if (!window) {
-    std::cerr << "Cannot create window" << std::endl;
+    std::cerr << "ウィンドウの生成に失敗しました" << std::endl;
     glfwTerminate();
     return 1;
   }
@@ -117,7 +117,7 @@ int main() {
   // glfwCreateWindowSurface : GLFW が提供する VkSurfaceKHR を取得する
   if (glfwCreateWindowSurface(instance.get(), window, nullptr, &surface) !=
       VK_SUCCESS) {
-    std::cerr << "Cannot create surface" << std::endl;
+    std::cerr << "GLFW のサーフェスの生成に失敗しました" << std::endl;
     return 1;
   }
 
